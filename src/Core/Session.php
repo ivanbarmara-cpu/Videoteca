@@ -39,18 +39,22 @@ final class Session
 
     public static function has(string $clave): bool
     {
-        // TODO
+        self::iniciar();
+        return isset($_SESSION[$clave]);
     }
 
     public static function remove(string $clave): void
     {
-        // TODO
+        self::iniciar();
+        unset($_SESSION[$clave]);
     }
 
     // ---------- Etapa 1 y 2: cierre de sesión ----------
     public static function destruir(): void
     {
         // Etapa 1: solo session_destroy().
+        self::iniciar();
+        session_destroy();
         // Etapa 2 (TODO): completar con los 3 pasos del apartado 3.6
         session_destroy();
     }

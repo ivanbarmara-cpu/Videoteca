@@ -16,6 +16,8 @@ use Core\Session;
 // La sesión se inicia UNA sola vez por petición, antes de cualquier salida.
 Session::iniciar();
 
+Session::set('secret', '1234');
+
 // Etapa 6: aquí se llamará a Session::comprobarCaducidad();
 
 // Evalúa la URL recibida y ejecuta la función/controlador asociado
