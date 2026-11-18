@@ -22,17 +22,24 @@ final class AuthController
 
     public function login(): void
     {
-        // TODO (Etapa 2): leer 'email' y 'password' de $_POST
-        // TODO: buscar el usuario con (new UserModel())->findByEmail()
-        // TODO: comprobar la contraseña con password_verify()
-        // TODO: si es correcta -> Session::set('user_id', ...) y redirect('perfil')
-        //       (Etapa 4: llamad antes a Session::regenerar())
-        // TODO: si falla -> redirect('login')
-        //       (mismo comportamiento si el correo no existe que si la contraseña es incorrecta)
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        // Buscamos al usuario por su email
+        $user = (new UserModel())->findByEmail($email);
+
+        // AQUÍ ESTABA EL CAMBIO: Cambiamos 'password' por 'hash'
+        if ($user && isset($user['hash']) && password_verify($password, $user['hash'])) {
+            Session::set('user_id', $user['id']);
+            redirect('perfil');
+        } else {
+            redirect('login');
+        }
     }
 
     public function logout(): void
     {
-        // TODO (Etapa 2): Session::destruir() y redirect('login')
+        Session::destruir();
+        redirect('login');
     }
 }

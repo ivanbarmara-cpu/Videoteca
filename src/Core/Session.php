@@ -52,11 +52,27 @@ final class Session
     // ---------- Etapa 1 y 2: cierre de sesión ----------
     public static function destruir(): void
     {
-        // Etapa 1: solo session_destroy().
         self::iniciar();
-        session_destroy();
-        // Etapa 2 (TODO): completar con los 3 pasos del apartado 3.6
-        session_destroy();
+    
+    // 1) Vaciar el array $_SESSION en memoria
+    $_SESSION = [];
+
+    // 2) Borrar la cookie de sesión del navegador
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(), 
+            '', 
+            time() - 42000,
+            $params["path"], 
+            $params["domain"],
+            $params["secure"], 
+            $params["httponly"]
+        );
+    }
+
+    // 3) Destruir el archivo de sesión en el servidor
+    session_destroy();
     }
 
     // ---------- Etapa 4: regeneración del ID ----------
