@@ -12,20 +12,32 @@ final class Session
     // ---------- Etapa 1 y 4: arranque ----------
     public static function iniciar(): void
     {
+        // Si la sesión ya está activa, cerramos la sesión actual temporalmente 
+        // o configuramos los parámetros antes de que se inicie por primera vez.
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
 
-        // TODO (Etapa 4, Exp. B): ini_set de use_strict_mode,
-        //      use_only_cookies y use_trans_sid
-        // TODO (Etapa 4, Exp. B): detectar HTTPS dinámicamente
-        //      $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-        // TODO (Etapa 4, Exp. B): session_set_cookie_params([...])
-        //      con httponly, samesite y secure
+        // 1) Endurecimiento de directivas de sesión
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+
+        // 2) Detección dinámica de HTTPS
+        $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+        // 3) Parámetros estricts de la cookie
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $https,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
 
         session_start();
     }
-
     // ---------- Etapa 1: métodos básicos ----------
     public static function get(string $clave, mixed $defecto = null): mixed
     {
@@ -78,7 +90,9 @@ final class Session
     // ---------- Etapa 4: regeneración del ID ----------
     public static function regenerar(): void
     {
-        // TODO: session_regenerate_id(true)
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_regenerate_id(true);
+        }
     }
 
     // ---------- Etapa 5: mensajes flash ----------

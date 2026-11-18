@@ -25,11 +25,12 @@ final class AuthController
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        // Buscamos al usuario por su email
         $user = (new UserModel())->findByEmail($email);
 
-        // AQUÍ ESTABA EL CAMBIO: Cambiamos 'password' por 'hash'
         if ($user && isset($user['hash']) && password_verify($password, $user['hash'])) {
+            // ¡Seguridad Etapa 4! Regeneramos el ID de sesión al autenticar
+            Session::regenerar();
+            
             Session::set('user_id', $user['id']);
             redirect('perfil');
         } else {
