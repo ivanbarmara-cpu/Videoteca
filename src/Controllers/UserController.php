@@ -12,9 +12,6 @@ final class UserController
 {
     public function perfil(): void
 {
-    if (!Session::has('user_id')) {
-        redirect('login');
-    }
     $usuario = (new UserModel())->findById((int) Session::get('user_id'));
     (new Pages())->render('user/perfil', ['usuario' => $usuario]);
 }
